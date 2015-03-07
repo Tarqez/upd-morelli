@@ -164,6 +164,10 @@ def print_stats():
 def pq_datasource(ftxt):
     'Yield a dict of values from estrazione.xls'
 
+    def price(a,b,c):
+        'Return the max price'
+        return max(float(a), float(b), float(c))/1000
+
     data_line = dict()
 
     with open(ftxt, 'rb') as f:
@@ -172,8 +176,8 @@ def pq_datasource(ftxt):
         for row in dsource_rows:
             try:
                 data_line['mo_code'] = row[0].strip()
-                data_line['prc'] = float(row[2].strip())/1000
-                data_line['qty'] = int(row[9].strip())                            
+                data_line['prc'] = price(row[2], row[3], row[4])
+                data_line['qty'] = int(row[9])                            
                 
                 yield data_line
                 
@@ -283,10 +287,11 @@ def revise_prc():
     fout_name = os.path.join(DATA_PATH, fx_fname('revise_prc'))
     with EbayFx(fout_name, smartheaders) as wrt:
         for art in arts:
-            fx_revise_row = {ACTION: 'Revise',
-                             'ItemID': art.itemid,
-                             '*StartPrice': art.prc,}
-            wrt.writerow(fx_revise_row)
+            if art.prc > 1: # jump art if his price is less than 1 euro
+                fx_revise_row = {ACTION: 'Revise',
+                                 'ItemID': art.itemid,
+                                 '*StartPrice': art.prc,}
+                wrt.writerow(fx_revise_row)
             art.update_prc = False
             s.add(art)
         s.commit()    
