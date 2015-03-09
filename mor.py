@@ -150,12 +150,18 @@ def ebay_link_n_check():
 def print_stats():
     'Print stats from db'
 
-    print 'Statistiche dopo questo aggiornamento'
-    print '-------------------------------------', '\n'
+    n1 = s.query(Art).filter(Art.itemid != u'').count()
+    n2 = s.query(Art).filter(Art.itemid != u'', Art.qty == 0).count()
+    n3 = s.query(Art).filter(Art.itemid == u'', Art.prc > 1.0).count()
+    n4 = s.query(Art).filter(Art.itemid == u'', Art.prc == 0).count()
 
-    print 'Inserzioni attive su eBay', 'per un totale di pezzi'
-    print 'Inserzioni con quantità pari a 0'
-    print 'Articoli senza inserzione che potresti aggiungere su eBay', 'per un totale pezzi'
+    print 'Statistiche ebay dopo questo aggiornamento'
+    print '------------------------------------------', '\n'
+
+    print 'Inserzioni attive'
+    print 'Inserzioni attive con quantità pari a 0'
+    print 'Articoli senza inserzione con prezzo > 1€ che potresti aggiungere su eBay'
+    print 'Articoli che non hai mai trattato (quelli con prezzo = 0)'
 
 
 # Datasources
